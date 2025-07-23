@@ -57,8 +57,26 @@ function HoddyNaveBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center text-3xl font-normal select-none">
-            <span className="text-black font-[cursive]" style={{ fontFamily: 'cursive' }}>Hoddy</span>
+          <div className="flex-shrink-0 flex items-end text-3xl font-normal select-none h-14" style={{ width: '120px', minWidth: '120px' }}>
+            <span
+              className="text-black tracking-wider pb-2"
+              style={{
+                fontFamily: 'Pacifico, cursive',
+                fontSize: '2rem',
+                display: 'inline-block',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                width: '0',
+                animation: 'typewriterHoddy 2.5s steps(24, end) 0.2s forwards',
+              }}
+            >
+              Hoddy
+              <style>{`
+                @keyframes typewriterHoddy {
+                  to { width: 6.2ch; }
+                }
+              `}</style>
+            </span>
           </div>
           {/* Mobile Cart and Profile Icons */}
           <div className="flex items-center space-x-4 md:hidden ml-auto">
