@@ -32,22 +32,22 @@ function Home() {
   // Example product data
   const products = [
     {
-      image: '/src/assets/images/Home_Section/Home 1.jpg',
+      image: '/src/assets/images/Collection/Cart.jpg',
       description: 'Premium Cotton Hoodie - Black',
       price: 'Rs. 4,500',
     },
     {
-      image: '/src/assets/images/Home_Section/Home 2.jpg',
+      image: '/src/assets/images/Collection/Cart.jpg',
       description: 'Classic Crewneck - White',
       price: 'Rs. 3,900',
     },
     {
-      image: '/src/assets/images/Home_Section/Home_Mobile-1.jpg',
+      image: '/src/assets/images/Collection/Cart.jpg',
       description: 'Urban Oversized Tee',
       price: 'Rs. 2,800',
     },
     {
-      image: '/src/assets/images/Home_Section/Home_Mobile_2.jpg',
+      image: '/src/assets/images/Collection/Cart.jpg',
       description: 'Minimalist Sweatshirt',
       price: 'Rs. 4,200',
     },
@@ -76,7 +76,7 @@ function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, idx) => (
             <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col items-center p-4 transition-transform hover:-translate-y-1 hover:shadow-2xl">
-              <img src={product.image} alt={product.description} className="w-full h-48 object-cover rounded-xl mb-4" />
+              <img src={product.image} alt={product.description} className="w-full h-64 object-contain rounded-xl mb-4 bg-white" />
               <div className="flex-1 w-full flex flex-col justify-between">
                 <p className="text-base font-medium text-gray-800 mb-2 text-center">{product.description}</p>
                 <p className="text-lg font-semibold text-black text-center">{product.price}</p>
