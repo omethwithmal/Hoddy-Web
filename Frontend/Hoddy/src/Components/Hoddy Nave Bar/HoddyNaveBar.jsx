@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 
 const menuItems = [
-  { name: "Home", link: "#" },
+  { name: "Home", scrollTo: "home" },
   {
     name: "Shop",
     dropdown: [
-      { name: "Men", link: "#" },
-      { name: "Women", link: "#" },
-      { name: "Home Dec", link: "#" },
-      { name: "Bags", link: "#" },
+      { name: "Men", scrollTo: "shop" },
+      { name: "Women", scrollTo: "shop" },
+      { name: "Home Dec", scrollTo: "shop" },
+      { name: "Bags", scrollTo: "shop" },
     ],
   },
-  { name: "About Us", link: "#" },
-  { name: "Contact Us", link: "#" },
+  { name: "About Us", scrollTo: "aboutUs" },
+  { name: "Contact Us", scrollTo: "contactUs" },
 ];
 
 // Add this helper function for menu item underline
@@ -23,7 +23,7 @@ const UnderlineLink = ({ children, className = '', as: Component = 'span', ...pr
   </Component>
 );
 
-function HoddyNaveBar() {
+function HoddyNaveBar({ scrollToHome, scrollToShop, scrollToAboutUs, scrollToContactUs }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -37,6 +37,28 @@ function HoddyNaveBar() {
 
   // Placeholder for cart item count
   const cartCount = 2;
+
+  // Handle scroll navigation
+  const handleScrollTo = (section) => {
+    switch(section) {
+      case 'home':
+        scrollToHome();
+        break;
+      case 'shop':
+        scrollToShop();
+        break;
+      case 'aboutUs':
+        scrollToAboutUs();
+        break;
+      case 'contactUs':
+        scrollToContactUs();
+        break;
+      default:
+        break;
+    }
+    setMobileMenuOpen(false);
+    setShopDropdownOpen(false);
+  };
 
   // Auto-close profile dropdown on outside click
   useEffect(() => {
@@ -122,6 +144,7 @@ function HoddyNaveBar() {
                   className="relative group"
                 >
                   <button
+                    onClick={() => handleScrollTo('shop')}
                     className="focus:outline-none flex items-center px-3 py-1 rounded-lg font-medium transition-colors duration-200"
                   >
                     <UnderlineLink>{item.name}</UnderlineLink>
@@ -131,14 +154,14 @@ function HoddyNaveBar() {
                   <div className="absolute left-0 mt-3 w-64 bg-white border border-gray-200 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-all duration-300 z-20 py-3 px-2 flex flex-col gap-1 animate-dropdown-fade">
                     {item.dropdown.map((drop, idx) => (
                       <>
-                        <a
+                        <button
                           key={drop.name}
-                          href={drop.link}
-                          className="block px-6 py-2 text-base font-semibold hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide"
+                          onClick={() => handleScrollTo(drop.scrollTo)}
+                          className="block px-6 py-2 text-base font-semibold hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide text-left w-full"
                           style={{ letterSpacing: '0.02em' }}
                         >
                           {drop.name}
-                        </a>
+                        </button>
                         {idx < item.dropdown.length - 1 && (
                           <div className="mx-4 border-b border-gray-200 opacity-60"></div>
                         )}
@@ -147,13 +170,13 @@ function HoddyNaveBar() {
                   </div>
                 </div>
               ) : (
-                <a
+                <button
                   key={item.name}
-                  href={item.link}
+                  onClick={() => handleScrollTo(item.scrollTo)}
                   className="px-3 py-1 rounded-lg font-medium transition-colors duration-200"
                 >
                   <UnderlineLink>{item.name}</UnderlineLink>
-                </a>
+                </button>
               )
             )}
           </div>
@@ -165,13 +188,11 @@ function HoddyNaveBar() {
               className="relative focus:outline-none transition-colors duration-200"
               aria-label="Cart"
             >
-              {/* Heroicons Shopping Cart */}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.272 1.017m0 0l1.357 5.086m-.001 0A2.25 2.25 0 008.25 12.75h7.5a2.25 2.25 0 002.2-1.817l1.2-6A1.125 1.125 0 0018.825 3H5.25m0 0L3.977 8.938m1.273-5.938L5.25 3" />
                 <circle cx="9" cy="20" r="1.25" />
                 <circle cx="17" cy="20" r="1.25" />
               </svg>
-              {/* Cart badge */}
               <span className="absolute -top-1 -right-2 bg-yellow-400 text-black text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md border border-yellow-200">{cartCount}</span>
             </button>
             {/* Profile Icon */}
@@ -190,7 +211,6 @@ function HoddyNaveBar() {
                 className="focus:outline-none flex items-center transition-colors duration-200"
                 aria-label="Profile"
               >
-                {/* Heroicons User Circle */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9A3.75 3.75 0 1112 5.25 3.75 3.75 0 0115.75 9zM4.5 19.5a7.5 7.5 0 1115 0v.75a.75.75 0 01-.75.75h-13.5a.75.75 0 01-.75-.75v-.75z" />
                 </svg>
@@ -239,14 +259,14 @@ function HoddyNaveBar() {
                   <div className="ml-2 mt-1 w-11/12 bg-white rounded-2xl shadow-xl py-2 px-1 flex flex-col gap-1 animate-mobile-dropdown">
                     {item.dropdown.map((drop, idx) => (
                       <>
-                        <a
+                        <button
                           key={drop.name}
-                          href={drop.link}
-                          className="block px-5 py-3 text-base font-semibold text-black rounded-xl transition-colors duration-200 tracking-wide active:bg-gray-100 focus:bg-gray-100 hover:bg-gray-100"
+                          onClick={() => handleScrollTo(drop.scrollTo)}
+                          className="block px-5 py-3 text-base font-semibold text-black rounded-xl transition-colors duration-200 tracking-wide active:bg-gray-100 focus:bg-gray-100 hover:bg-gray-100 text-left w-full"
                           style={{ letterSpacing: '0.02em' }}
                         >
                           {drop.name}
-                        </a>
+                        </button>
                         {idx < item.dropdown.length - 1 && (
                           <div className="mx-4 border-b border-gray-200 opacity-60"></div>
                         )}
@@ -256,13 +276,13 @@ function HoddyNaveBar() {
                 )}
               </div>
             ) : (
-              <a
+              <button
                 key={item.name}
-                href={item.link}
-                className="block py-3 text-black rounded-lg font-medium transition-colors duration-200"
+                onClick={() => handleScrollTo(item.scrollTo)}
+                className="block py-3 text-black rounded-lg font-medium transition-colors duration-200 w-full text-left"
               >
                 <UnderlineLink>{item.name}</UnderlineLink>
-              </a>
+              </button>
             )
           )}
         </div>
