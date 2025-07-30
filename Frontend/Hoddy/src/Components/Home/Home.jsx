@@ -25,6 +25,11 @@ function Home() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
   const [activeNewCollectionFilter, setActiveNewCollectionFilter] = useState('All');
   const [activeShopCategory, setActiveShopCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   // Create refs for each section
   const homeRef = useRef(null);
@@ -56,37 +61,97 @@ function Home() {
     });
   };
 
-  // Product data for New Collection (using cart images)
+  // Enhanced product data with more details
   const newCollectionProducts = [
     {
-      image: '/src/assets/images/Collection/Cart.jpg',
-      description: 'Premium Cotton Hoodie - Black',
+      id: 1,
+      name: 'Premium Cotton Hoodie',
+      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      images: [
+        '/src/assets/images/Collection/Cart.jpg',
+        '/src/assets/images/Collection/Cart_2.jpg',
+        '/src/assets/images/Collection/Cart_3.jpg',
+        '/src/assets/images/Collection/Cart_4.jpg',
+        '/src/assets/images/Collection/Cart_5.jpg'
+      ],
+      description: 'Our premium cotton hoodie offers unmatched comfort and style. Made with 100% organic cotton, this hoodie features a relaxed fit, adjustable drawstring hood, and kangaroo pocket for ultimate comfort.',
       price: 'Rs. 4,500',
-      category: 'Men'
+      category: 'Men',
+      material: '100% Organic Cotton',
+      colors: ['Black', 'White', 'Navy Blue'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL']
     },
     {
-      image: '/src/assets/images/Collection/Cart.jpg',
-      description: 'Classic Crewneck - White',
+      id: 2,
+      name: 'Classic Crewneck',
+      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      images: [
+        '/src/assets/images/Collection/Cart.jpg',
+        '/src/assets/images/Collection/Cart_2.jpg',
+        '/src/assets/images/Collection/Cart_3.jpg',
+        '/src/assets/images/Collection/Cart_4.jpg',
+        '/src/assets/images/Collection/Cart_5.jpg'
+      ],
+      description: 'The essential crewneck sweater made from a premium cotton blend. Features ribbed cuffs and hem for a classic fit that never goes out of style.',
       price: 'Rs. 3,900',
-      category: 'Men'
+      category: 'Men',
+      material: '80% Cotton, 20% Polyester',
+      colors: ['White', 'Gray', 'Charcoal'],
+      sizes: ['S', 'M', 'L', 'XL']
     },
     {
-      image: '/src/assets/images/Collection/Cart.jpg',
-      description: 'Urban Oversized Tee',
+      id: 3,
+      name: 'Urban Oversized Tee',
+      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      images: [
+        '/src/assets/images/Collection/Cart.jpg',
+        '/src/assets/images/Collection/Cart_2.jpg',
+        '/src/assets/images/Collection/Cart_3.jpg',
+        '/src/assets/images/Collection/Cart_4.jpg',
+        '/src/assets/images/Collection/Cart_5.jpg'
+      ],
+      description: 'Oversized fit t-shirt with dropped shoulders for a contemporary urban look. Made from soft, breathable fabric for all-day comfort.',
       price: 'Rs. 2,800',
-      category: 'Women'
+      category: 'Women',
+      material: '100% Combed Cotton',
+      colors: ['Black', 'White', 'Olive Green'],
+      sizes: ['XS', 'S', 'M', 'L']
     },
     {
-      image: '/src/assets/images/Collection/Cart.jpg',
-      description: 'Minimalist Sweatshirt',
+      id: 4,
+      name: 'Minimalist Sweatshirt',
+      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      images: [
+        '/src/assets/images/Collection/Cart.jpg',
+        '/src/assets/images/Collection/Cart_2.jpg',
+        '/src/assets/images/Collection/Cart_3.jpg',
+        '/src/assets/images/Collection/Cart_4.jpg',
+        '/src/assets/images/Collection/Cart_5.jpg'
+      ],
+      description: 'Clean, minimalist sweatshirt with subtle branding. Features a relaxed fit and premium fleece lining for warmth without bulk.',
       price: 'Rs. 4,200',
-      category: 'Women'
+      category: 'Women',
+      material: '50% Cotton, 50% Polyester',
+      colors: ['Beige', 'Gray', 'Black'],
+      sizes: ['S', 'M', 'L', 'XL']
     },
     {
-      image: '/src/assets/images/Collection/Cart.jpg',
-      description: 'Street Style Zip-Up',
+      id: 5,
+      name: 'Street Style Zip-Up',
+      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      images: [
+        '/src/assets/images/Collection/Cart.jpg',
+        '/src/assets/images/Collection/Cart_2.jpg',
+        '/src/assets/images/Collection/Cart_3.jpg',
+        '/src/assets/images/Collection/Cart_4.jpg',
+        '/src/assets/images/Collection/Cart_5.jpg'
+      ],
+      description: 'Modern zip-up hoodie with streetwear-inspired details. Features a front zip closure, ribbed cuffs, and a comfortable fit for everyday wear.',
       price: 'Rs. 5,100',
-      category: 'Men'
+      category: 'Men',
+      material: '70% Cotton, 30% Polyester',
+      colors: ['Black', 'Dark Gray', 'Burgundy'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL']
     }
   ];
 
@@ -103,14 +168,73 @@ function Home() {
   const categories = ['All', 'Men', 'Women', 'Home Dec', 'Bags'];
   const shopCategories = ['Men', 'Women', 'Home Dec', 'Bags'];
 
+  // Open product modal
+  const openProductModal = (product) => {
+    setSelectedProduct(product);
+    setSelectedColor(product.colors[0]);
+    setSelectedSize(product.sizes[0]);
+    setCurrentImageIndex(0);
+    setQuantity(1);
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close product modal
+  const closeProductModal = () => {
+    setSelectedProduct(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  // Navigate product images
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === selectedProduct.images.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? selectedProduct.images.length - 1 : prev - 1
+    );
+  };
+
+  // Add to cart function
+  const addToCart = () => {
+    alert(`${selectedProduct.name} (${selectedSize}, ${selectedColor}) added to cart!`);
+    closeProductModal();
+  };
+
+  // Handle quantity change
+  const handleQuantityChange = (value) => {
+    const newQuantity = quantity + value;
+    if (newQuantity >= 1 && newQuantity <= 10) {
+      setQuantity(newQuantity);
+    }
+  };
+
   return (
     <>
+      <style>
+        {`
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          
+          /* Hide scrollbar for IE, Edge and Firefox */
+          .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+          }
+        `}
+      </style>
+      
       <HoddyNaveBar 
         scrollToHome={() => scrollToSection(homeRef)}
         scrollToShop={() => scrollToSection(shopRef)}
         scrollToAboutUs={() => scrollToSection(aboutUsRef)}
         scrollToContactUs={() => scrollToSection(contactUsRef)}
       />
+      
       {/* Home Section with ref */}
       <div ref={homeRef} className="w-full min-h-screen bg-white flex flex-col">
         {/* Mobile Fullscreen Image */}
@@ -152,21 +276,22 @@ function Home() {
           {/* Products Grid - Full Width Scrolling */}
           <div className="w-full overflow-x-auto scrollbar-hide">
             <div className="inline-flex space-x-8 px-8">
-              {filteredNewCollectionProducts.map((product, idx) => (
+              {filteredNewCollectionProducts.map((product) => (
                 <div 
-                  key={`new-${idx}`} 
-                  className="bg-white rounded-xl overflow-hidden flex flex-col items-center p-4 w-80 flex-shrink-0 transition-all hover:scale-[1.02]"
+                  key={`new-${product.id}`} 
+                  className="bg-white rounded-xl overflow-hidden flex flex-col items-center p-4 w-80 flex-shrink-0 transition-all hover:scale-[1.02] cursor-pointer"
+                  onClick={() => openProductModal(product)}
                 >
                   <div className="w-full h-96 mb-4">
                     <img 
-                      src={product.image} 
-                      alt={product.description} 
+                      src={product.mainImage} 
+                      alt={product.name} 
                       className="w-full h-full object-contain p-2 border-0" 
                     />
                   </div>
                   <div className="w-full flex flex-col justify-between px-2 pb-2">
                     <p className="text-lg font-medium text-gray-800 mb-2 text-center line-clamp-2">
-                      {product.description}
+                      {product.name}
                     </p>
                     <p className="text-xl font-semibold text-black text-center">
                       {product.price}
@@ -185,6 +310,225 @@ function Home() {
           )}
         </div>
       </section>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            {/* Background overlay */}
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div 
+                className="absolute inset-0 bg-black opacity-75"
+                onClick={closeProductModal}
+              ></div>
+            </div>
+
+            {/* Modal content */}
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full max-h-[90vh] overflow-y-auto no-scrollbar">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  {/* Product Images */}
+                  <div className="w-full sm:w-1/2 flex flex-col">
+                    {/* Main Image */}
+                    <div className="relative h-96 w-full bg-gray-100 rounded-lg overflow-hidden">
+                      <img
+                        src={selectedProduct.images[currentImageIndex]}
+                        alt={selectedProduct.name}
+                        className="w-full h-full object-contain"
+                      />
+                      {/* Navigation arrows */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          prevImage();
+                        }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-90 transition"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          nextImage();
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-90 transition"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {/* Thumbnail images */}
+                    <div className="flex mt-4 space-x-2 overflow-x-auto py-2 no-scrollbar">
+                      {selectedProduct.images.map((image, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex(idx);
+                          }}
+                          className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 ${currentImageIndex === idx ? 'border-black' : 'border-gray-200'}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Thumbnail ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Product Details */}
+                  <div className="w-full sm:w-1/2 pl-0 sm:pl-8 mt-6 sm:mt-0">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-1">{selectedProduct.name}</h3>
+                        <p className="text-xl font-semibold text-black mb-4">{selectedProduct.price}</p>
+                      </div>
+                      {/* Close button - moved inside for mobile */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          closeProductModal();
+                        }}
+                        className="sm:hidden bg-black text-white rounded-full p-1 hover:bg-gray-800 focus:outline-none transition"
+                      >
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Description</h4>
+                      <p className="text-gray-600 text-sm">{selectedProduct.description}</p>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Material</h4>
+                      <p className="text-gray-600 text-sm">{selectedProduct.material}</p>
+                    </div>
+                    
+                    {/* Color Selection */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Color</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.colors.map(color => (
+                          <button
+                            key={color}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedColor(color);
+                            }}
+                            className={`px-3 py-1.5 rounded-full border text-sm ${selectedColor === color ? 'border-black bg-black text-white' : 'border-gray-300 bg-white text-gray-800 hover:bg-gray-50'}`}
+                          >
+                            {color}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Size Selection */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Size</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.sizes.map(size => (
+                          <button
+                            key={size}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSize(size);
+                            }}
+                            className={`w-10 h-10 flex items-center justify-center rounded-md border text-sm ${selectedSize === size ? 'border-black bg-black text-white' : 'border-gray-300 bg-white text-gray-800 hover:bg-gray-50'}`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quantity Selector */}
+                    <div className="mb-8">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Quantity</h4>
+                      <div className="flex items-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(-1);
+                          }}
+                          className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-l-md bg-white hover:bg-gray-50"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        </button>
+                        <div className="w-16 h-10 flex items-center justify-center border-t border-b border-gray-300 bg-white">
+                          {quantity}
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleQuantityChange(1);
+                          }}
+                          className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-r-md bg-white hover:bg-gray-50"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart();
+                        }}
+                        className="flex-1 bg-black text-white py-3 px-4 rounded-md font-medium hover:bg-gray-800 transition text-sm sm:text-base"
+                      >
+                        Add to Cart
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart();
+                          navigate('/checkout');
+                        }}
+                        className="flex-1 bg-white border border-black text-black py-3 px-4 rounded-md font-medium hover:bg-gray-100 transition text-sm sm:text-base"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Close button - desktop */}
+              <div className="hidden sm:block absolute top-4 right-4">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeProductModal();
+                  }}
+                  className="bg-black text-white rounded-full p-2 hover:bg-gray-800 focus:outline-none transition"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Shop Section with ref */}
       <section ref={shopRef} className="w-full px-0 py-12 bg-gray-50">
@@ -371,6 +715,7 @@ function Home() {
         </section>
       </div>
 
+
       {/* Professional Footer Section */}
       <footer className="w-full bg-black text-white pt-12 pb-8">
         <div className="max-w-7xl mx-auto px-6">
@@ -497,4 +842,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home;   
