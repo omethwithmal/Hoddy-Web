@@ -197,9 +197,41 @@ function Home() {
     );
   };
 
-  // Add to cart function
+  // Cart state for navbar
+  const [cartItems, setCartItems] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // Add to cart function (update cartItems state)
   const addToCart = () => {
-    alert(`${selectedProduct.name} (${selectedSize}, ${selectedColor}) added to cart!`);
+    // Check if item with same id, color, size exists
+    const existingIndex = cartItems.findIndex(
+      (item) =>
+        item.id === selectedProduct.id &&
+        item.color === selectedColor &&
+        item.size === selectedSize
+    );
+    let newCart;
+    if (existingIndex !== -1) {
+      // Update quantity if already exists
+      newCart = [...cartItems];
+      newCart[existingIndex].quantity += quantity;
+    } else {
+      // Add new item
+      newCart = [
+        ...cartItems,
+        {
+          id: selectedProduct.id,
+          name: selectedProduct.name,
+          price: Number(selectedProduct.price.replace(/[^\d]/g, '')),
+          image: selectedProduct.mainImage,
+          color: selectedColor,
+          size: selectedSize,
+          quantity,
+        },
+      ];
+    }
+    setCartItems(newCart);
+    setCartOpen(true); // Open cart in navbar
     closeProductModal();
   };
 
@@ -233,6 +265,10 @@ function Home() {
         scrollToShop={() => scrollToSection(shopRef)}
         scrollToAboutUs={() => scrollToSection(aboutUsRef)}
         scrollToContactUs={() => scrollToSection(contactUsRef)}
+        cartItems={cartItems}
+        setCartItems={setCartItems}
+        cartOpen={cartOpen}
+        setCartOpen={setCartOpen}
       />
       
       {/* Home Section with ref */}
@@ -495,16 +531,7 @@ function Home() {
                       >
                         Add to Cart
                       </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart();
-                          navigate('/checkout');
-                        }}
-                        className="flex-1 bg-white border border-black text-black py-3 px-4 rounded-md font-medium hover:bg-gray-100 transition text-sm sm:text-base"
-                      >
-                        Buy Now
-                      </button>
+                      
                     </div>
                   </div>
                 </div>
@@ -842,4 +869,4 @@ function Home() {
   );
 }
 
-export default Home;   
+export default Home;
