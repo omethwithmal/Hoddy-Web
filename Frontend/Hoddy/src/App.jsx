@@ -4,6 +4,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HoddyNaveBar from "./Components/Hoddy Nave Bar/HoddyNaveBar";
 import Home from "./Components/Home/Home";
 import AuthPage from "./Components/User Access/AuthPage";
+import Men from "./Components/Shop/men";
+import Women from "./Components/Shop/women";
+import Bags from "./Components/Shop/bag";
+import ShopFooter from "./Components/Shop/ShopFooter";
+
+
+
 
 
 
@@ -19,6 +26,10 @@ function App() {
         <Route path="HoddyNaveBar" element={<HoddyNaveBar />} />
         <Route path="Home" element={<Home />} />
         <Route path="AuthPage" element={<AuthPage />} />
+        <Route path="Men" element={<Men />} />
+        <Route path="Women" element={<Women />} />
+        <Route path="Bags" element={<Bags />} />
+        <Route path="ShopFooter" element={<ShopFooter />} />
       </Routes>
     </Router>
   );
