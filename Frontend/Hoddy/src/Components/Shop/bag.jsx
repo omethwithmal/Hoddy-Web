@@ -1,23 +1,26 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HoddyNaveBar from "../Hoddy Nave Bar/HoddyNaveBar";
 import { FiSearch, FiX, FiChevronDown, FiChevronUp, FiPlus, FiMinus, FiChevronLeft, FiChevronRight, FiShoppingCart, FiStar, FiMessageSquare } from "react-icons/fi";
+import ShopFooter from "../Shop/ShopFooter";
 
-// Dummy product data with ratings and reviews for bags
+// Dummy product data for bags with ratings, reviews and stock status
 const products = [
   {
     id: 1,
     name: "Premium Leather Backpack - Black",
-    price: 12500,
+    price: 8500,
     images: [
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
     ],
-    sizes: ["Small", "Medium", "Large"],
+    sizes: ["One Size"],
     colors: ["Black", "Brown", "Tan"],
     material: "Genuine Leather",
     description: "A premium leather backpack with multiple compartments, perfect for work and travel.",
-    rating: 4.7,
+    rating: 4.8,
+    inStock: true,
     reviews: [
       {
         id: 1,
@@ -37,8 +40,8 @@ const products = [
   },
   {
     id: 2,
-    name: "Minimalist Canvas Tote Bag",
-    price: 4500,
+    name: "Canvas Tote Bag - Beige",
+    price: 3200,
     images: [
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
@@ -46,122 +49,136 @@ const products = [
     ],
     sizes: ["One Size"],
     colors: ["Beige", "Black", "Navy"],
-    material: "Heavyweight Canvas",
-    description: "Simple and stylish tote bag for everyday use with reinforced handles.",
+    material: "Heavy-duty Canvas",
+    description: "Spacious tote bag made from durable canvas with reinforced handles.",
     rating: 4.3,
+    inStock: true,
     reviews: [
       {
         id: 1,
         user: "Emma S.",
-        rating: 4,
-        comment: "Love the minimalist design. Perfect for grocery shopping.",
+        rating: 5,
+        comment: "Perfect for daily use. Fits all my essentials and more!",
         date: "2023-06-10"
       }
     ]
   },
   {
     id: 3,
-    name: "Travel Duffel Bag - Large",
-    price: 9800,
+    name: "Travel Duffel Bag - Navy",
+    price: 6500,
     images: [
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
     ],
-    sizes: ["Medium", "Large", "X-Large"],
-    colors: ["Gray", "Black", "Olive"],
-    material: "Waterproof Nylon",
-    description: "Spacious duffel bag with shoe compartment and multiple pockets for organized travel.",
-    rating: 4.8,
+    sizes: ["Small", "Medium", "Large"],
+    colors: ["Navy", "Black", "Gray"],
+    material: "Water-resistant Polyester",
+    description: "Durable duffel bag with multiple pockets and comfortable shoulder strap.",
+    rating: 4.6,
+    inStock: true,
     reviews: [
       {
         id: 1,
         user: "David L.",
         rating: 5,
-        comment: "Perfect for weekend trips. Fits all my gym gear too!",
+        comment: "Great for weekend trips. Fits everything I need!",
         date: "2023-05-30"
       },
       {
         id: 2,
         user: "Robert P.",
-        rating: 5,
-        comment: "The waterproof material saved my clothes during a rainstorm.",
+        rating: 4,
+        comment: "Good quality, but the zipper could be smoother.",
         date: "2023-04-15"
       }
     ]
   },
   {
     id: 4,
-    name: "Laptop Messenger Bag",
-    price: 7500,
-    images: [
-      "/src/assets/images/Collection/Cart.jpg",
-      "/src/assets/images/Collection/Cart.jpg",
-      "/src/assets/images/Collection/Cart.jpg",
-    ],
-    sizes: ["13-inch", "15-inch", "17-inch"],
-    colors: ["Black", "Brown", "Blue"],
-    material: "Synthetic Leather",
-    description: "Professional messenger bag with padded laptop compartment and organizer pockets.",
-    rating: 4.1,
-    reviews: []
-  },
-  {
-    id: 5,
-    name: "Crossbody Sling Bag",
-    price: 3800,
-    images: [
-      "/src/assets/images/Collection/Cart.jpg",
-      "/src/assets/images/Collection/Cart.jpg",
-      "/src/assets/images/Collection/Cart.jpg",
-    ],
-    sizes: ["Small", "Medium"],
-    colors: ["Black", "Khaki", "Burgundy"],
-    material: "Polyester with PU Coating",
-    description: "Compact sling bag with RFID pocket, perfect for essentials when you're on the go.",
-    rating: 4.4,
-    reviews: [
-      {
-        id: 1,
-        user: "Lisa K.",
-        rating: 4,
-        comment: "Fits my phone, wallet and keys perfectly. Very convenient.",
-        date: "2023-06-05"
-      }
-    ]
-  },
-  {
-    id: 6,
-    name: "Eco-Friendly Jute Shopping Bag",
-    price: 2500,
+    name: "Mini Crossbody Bag - Red",
+    price: 4200,
     images: [
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
       "/src/assets/images/Collection/Cart.jpg",
     ],
     sizes: ["One Size"],
-    colors: ["Natural", "Green", "Beige"],
-    material: "100% Jute",
-    description: "Sustainable shopping bag with reinforced handles and spacious interior.",
-    rating: 4.0,
+    colors: ["Red", "Black", "Pink"],
+    material: "Faux Leather",
+    description: "Compact crossbody bag with adjustable strap and multiple card slots.",
+    rating: 4.1,
+    inStock: false,
+    reviews: []
+  },
+  {
+    id: 5,
+    name: "Laptop Messenger Bag - Gray",
+    price: 7200,
+    images: [
+      "/src/assets/images/Collection/Cart.jpg",
+      "/src/assets/images/Collection/Cart.jpg",
+      "/src/assets/images/Collection/Cart.jpg",
+    ],
+    sizes: ["13 inch", "15 inch", "17 inch"],
+    colors: ["Gray", "Black", "Blue"],
+    material: "Nylon with Leather Accents",
+    description: "Professional messenger bag with padded laptop compartment.",
+    rating: 4.4,
+    inStock: true,
+    reviews: [
+      {
+        id: 1,
+        user: "Michael T.",
+        rating: 4,
+        comment: "Good protection for my laptop and plenty of pockets.",
+        date: "2023-06-05"
+      }
+    ]
+  },
+  {
+    id: 6,
+    name: "Eco-Friendly Shopping Bag - Green",
+    price: 1800,
+    images: [
+      "/src/assets/images/Collection/Cart.jpg",
+      "/src/assets/images/Collection/Cart.jpg",
+      "/src/assets/images/Collection/Cart.jpg",
+    ],
+    sizes: ["One Size"],
+    colors: ["Green", "Natural", "Blue"],
+    material: "Organic Cotton",
+    description: "Foldable reusable shopping bag that's strong and environmentally friendly.",
+    rating: 4.7,
+    inStock: true,
     reviews: [
       {
         id: 1,
         user: "Sophia N.",
-        rating: 4,
-        comment: "Great alternative to plastic bags. Very sturdy.",
+        rating: 5,
+        comment: "Love this bag! So convenient and holds more than expected.",
         date: "2023-05-20"
+      },
+      {
+        id: 2,
+        user: "Lisa K.",
+        rating: 4,
+        comment: "Great concept but could be a bit larger.",
+        date: "2023-04-10"
       }
     ]
   },
 ];
 
-const allSizes = ["Small", "Medium", "Large", "X-Large", "One Size", "13-inch", "15-inch", "17-inch"];
+const allSizes = ["One Size", "Small", "Medium", "Large", "13 inch", "15 inch", "17 inch"];
 
 function Bags() {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState("");
   const [selectedSizes, setSelectedSizes] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 15000]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [cartItems, setCartItems] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -193,7 +210,7 @@ function Bags() {
       product.name.toLowerCase().includes(search.toLowerCase()) ||
       product.description.toLowerCase().includes(search.toLowerCase());
     
-    // Size filter - fixed logic
+    // Size filter
     const matchSize = 
       selectedSizes.length === 0 || 
       selectedSizes.some(size => product.sizes.includes(size));
@@ -218,11 +235,16 @@ function Bags() {
   const resetFilters = () => {
     setSearch("");
     setSelectedSizes([]);
-    setPriceRange([0, 15000]);
+    setPriceRange([0, 10000]);
   };
 
   // Add to cart with selected options
   const addToCart = () => {
+    if (!selectedProduct.inStock) {
+      alert("This product is currently out of stock");
+      return;
+    }
+    
     if (!selectedColor || !selectedSize) {
       alert("Please select color and size");
       return;
@@ -238,13 +260,25 @@ function Bags() {
     };
 
     setCartItems([...cartItems, newItem]);
-    setCartOpen(true);
     setShowAddToCartNotification(true);
+    
+    setSelectedProduct(null);
+    setSelectedColor("");
+    setSelectedSize("");
+    setQuantity(1);
+    setCurrentImageIndex(0);
+    setActiveTab("description");
+    
     setTimeout(() => setShowAddToCartNotification(false), 3000);
   };
 
-  // Quick add to cart (direct from product card)
+  // Quick add to cart
   const quickAddToCart = (product) => {
+    if (!product.inStock) {
+      alert("This product is currently out of stock");
+      return;
+    }
+
     const newItem = {
       ...product,
       quantity: 1,
@@ -255,7 +289,6 @@ function Bags() {
     };
 
     setCartItems([...cartItems, newItem]);
-    setCartOpen(true);
     setShowAddToCartNotification(true);
     setTimeout(() => setShowAddToCartNotification(false), 3000);
   };
@@ -300,28 +333,24 @@ function Bags() {
       date: new Date().toISOString().split('T')[0]
     };
 
-    // Update the selected product's reviews
     const updatedProduct = {
       ...selectedProduct,
       reviews: [...selectedProduct.reviews, reviewToAdd],
       rating: calculateNewAverageRating(selectedProduct, reviewToAdd.rating)
     };
 
-    // Update the products array
     const productIndex = products.findIndex(p => p.id === selectedProduct.id);
     products[productIndex] = updatedProduct;
 
-    // Update the selected product in state
     setSelectedProduct(updatedProduct);
     
-    // Reset the review form
     setNewReview({
       rating: 5,
       comment: ""
     });
   };
 
-  // Calculate new average rating after adding a review
+  // Calculate new average rating
   const calculateNewAverageRating = (product, newRating) => {
     const totalReviews = product.reviews.length + 1;
     const sumRatings = product.reviews.reduce((sum, review) => sum + review.rating, 0) + newRating;
@@ -347,6 +376,14 @@ function Bags() {
     return stars;
   };
 
+  // Handler for Shop dropdown navigation
+  const handleShopDropdownNavigate = (section) => {
+    if (section === "Men") navigate("/men");
+    else if (section === "Women") navigate("/women");
+    else if (section === "Home Dec") navigate("/homeDec");
+    else if (section === "Bags") navigate("/bags");
+  };
+
   return (
     <div className="bg-white min-h-screen">
       {/* Navbar */}
@@ -355,10 +392,11 @@ function Bags() {
         setCartItems={setCartItems}
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}
-        scrollToHome={() => {}}
-        scrollToShop={() => {}}
-        scrollToAboutUs={() => {}}
-        scrollToContactUs={() => {}}
+        scrollToHome={() => navigate("/Home")}
+        scrollToShop={() => navigate("/Home")}
+        scrollToAboutUs={() => navigate("/aboutUs")}
+        scrollToContactUs={() => navigate("/Home")}
+        onShopDropdownNavigate={handleShopDropdownNavigate}
       />
 
       {/* Add to Cart Notification */}
@@ -391,6 +429,12 @@ function Bags() {
                 </button>
               </div>
               
+              <div className={`mb-4 inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                selectedProduct.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {selectedProduct.inStock ? 'In Stock' : 'Out of Stock'}
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Image Gallery */}
                 <div className="space-y-4">
@@ -401,7 +445,6 @@ function Bags() {
                       className="w-full h-full object-contain p-4"
                     />
                     
-                    {/* Navigation arrows */}
                     {selectedProduct.images.length > 1 && (
                       <>
                         <button
@@ -420,7 +463,6 @@ function Bags() {
                     )}
                   </div>
                   
-                  {/* Thumbnail gallery */}
                   {selectedProduct.images.length > 1 && (
                     <div className="flex gap-2 overflow-x-auto py-2">
                       {selectedProduct.images.map((img, index) => (
@@ -442,7 +484,6 @@ function Bags() {
                 
                 {/* Product Details */}
                 <div>
-                  {/* Rating display */}
                   <div className="flex items-center mb-2">
                     <div className="flex mr-2">
                       {renderStars(selectedProduct.rating)}
@@ -466,7 +507,10 @@ function Bags() {
                         <button
                           key={color}
                           onClick={() => setSelectedColor(color)}
-                          className={`px-3 py-1 border rounded-full text-sm ${selectedColor === color ? 'border-black bg-black text-white' : 'border-gray-300'}`}
+                          className={`px-3 py-1 border rounded-full text-sm ${selectedColor === color ? 'border-black bg-black text-white' : 'border-gray-300'} ${
+                            !selectedProduct.inStock ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          disabled={!selectedProduct.inStock}
                         >
                           {color}
                         </button>
@@ -482,7 +526,10 @@ function Bags() {
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`px-3 py-1 border rounded-full text-sm ${selectedSize === size ? 'border-black bg-black text-white' : 'border-gray-300'}`}
+                          className={`px-3 py-1 border rounded-full text-sm ${selectedSize === size ? 'border-black bg-black text-white' : 'border-gray-300'} ${
+                            !selectedProduct.inStock ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          disabled={!selectedProduct.inStock}
                         >
                           {size}
                         </button>
@@ -493,10 +540,13 @@ function Bags() {
                   {/* Quantity Selector */}
                   <div className="mb-6">
                     <h3 className="text-sm font-medium mb-2">Quantity</h3>
-                    <div className="flex items-center border border-gray-300 rounded-lg w-fit">
+                    <div className={`flex items-center border border-gray-300 rounded-lg w-fit ${
+                      !selectedProduct.inStock ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}>
                       <button 
                         onClick={decreaseQuantity}
                         className="px-3 py-1 text-lg hover:bg-gray-100"
+                        disabled={!selectedProduct.inStock}
                       >
                         <FiMinus />
                       </button>
@@ -504,6 +554,7 @@ function Bags() {
                       <button 
                         onClick={increaseQuantity}
                         className="px-3 py-1 text-lg hover:bg-gray-100"
+                        disabled={!selectedProduct.inStock}
                       >
                         <FiPlus />
                       </button>
@@ -513,10 +564,19 @@ function Bags() {
                   {/* Add to Cart Button */}
                   <button
                     onClick={addToCart}
-                    disabled={!selectedColor || !selectedSize}
-                    className={`w-full py-3 rounded-lg font-medium mb-6 ${!selectedColor || !selectedSize ? 'bg-gray-300 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800'}`}
+                    disabled={!selectedProduct.inStock || !selectedColor || !selectedSize}
+                    className={`w-full py-3 rounded-lg font-medium mb-6 ${
+                      !selectedProduct.inStock 
+                        ? 'bg-gray-300 cursor-not-allowed' 
+                        : !selectedColor || !selectedSize 
+                          ? 'bg-gray-300 cursor-not-allowed' 
+                          : 'bg-black text-white hover:bg-gray-800'
+                    }`}
                   >
-                    Add to Cart - {formatPrice(selectedProduct.price * quantity)}
+                    {!selectedProduct.inStock 
+                      ? 'Out of Stock' 
+                      : `Add to Cart - ${formatPrice(selectedProduct.price * quantity)}`
+                    }
                   </button>
                   
                   {/* Tabs for Description and Reviews */}
@@ -543,7 +603,6 @@ function Bags() {
                       <p className="text-gray-700">{selectedProduct.description}</p>
                     ) : (
                       <div>
-                        {/* Reviews list */}
                         {selectedProduct.reviews.length > 0 ? (
                           <div className="space-y-4">
                             {selectedProduct.reviews.map(review => (
@@ -567,7 +626,6 @@ function Bags() {
                           <p className="text-gray-500">No reviews yet.</p>
                         )}
                         
-                        {/* Add review form */}
                         <div className="mt-6">
                           <h3 className="text-lg font-medium mb-3">Add a review</h3>
                           <div className="mb-4">
@@ -627,7 +685,7 @@ function Bags() {
               Bags Collection
             </h1>
             <p className="text-white/90 text-lg md:text-xl max-w-2xl">
-              Discover high-quality bags for every occasion, from work to travel
+              Discover high-quality bags for every occasion, from backpacks to totes
             </p>
           </div>
         </div>
@@ -718,7 +776,7 @@ function Bags() {
                     <input
                       type="range"
                       min="0"
-                      max="15000"
+                      max="10000"
                       step="500"
                       value={priceRange[0]}
                       onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
@@ -727,7 +785,7 @@ function Bags() {
                     <input
                       type="range"
                       min="0"
-                      max="15000"
+                      max="10000"
                       step="500"
                       value={priceRange[1]}
                       onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
@@ -738,7 +796,7 @@ function Bags() {
               </div>
 
               {/* Active Filters */}
-              {(selectedSizes.length > 0 || search || priceRange[0] > 0 || priceRange[1] < 15000) && (
+              {(selectedSizes.length > 0 || search || priceRange[0] > 0 || priceRange[1] < 10000) && (
                 <div className="mt-6">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-medium">Active filters:</span>
@@ -767,11 +825,11 @@ function Bags() {
                         </button>
                       </span>
                     )}
-                    {(priceRange[0] > 0 || priceRange[1] < 15000) && (
+                    {(priceRange[0] > 0 || priceRange[1] < 10000) && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                         Price: Rs. {priceRange[0].toLocaleString()} - Rs. {priceRange[1].toLocaleString()}
                         <button 
-                          onClick={() => setPriceRange([0, 15000])}
+                          onClick={() => setPriceRange([0, 10000])}
                           className="ml-1.5 inline-flex text-gray-400 hover:text-gray-500"
                         >
                           <FiX className="h-3 w-3" />
@@ -848,17 +906,26 @@ function Bags() {
                   key={product.id}
                   className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
                 >
+                  {/* Stock status badge */}
+                  <div className={`absolute top-2 left-2 z-10 px-2 py-1 rounded-md text-xs font-medium ${
+                    product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {product.inStock ? 'In Stock' : 'Out of Stock'}
+                  </div>
+                  
                   {/* Quick Add to Cart Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      quickAddToCart(product);
-                    }}
-                    className="absolute top-2 right-2 z-10 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-800"
-                    title="Quick Add to Cart"
-                  >
-                    <FiShoppingCart size={16} />
-                  </button>
+                  {product.inStock && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        quickAddToCart(product);
+                      }}
+                      className="absolute top-2 right-2 z-10 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-800"
+                      title="Quick Add to Cart"
+                    >
+                      <FiShoppingCart size={16} />
+                    </button>
+                  )}
                   
                   {/* Clickable product card */}
                   <div 
@@ -875,8 +942,17 @@ function Bags() {
                       <img
                         src={product.images[0]}
                         alt={product.name}
-                        className="w-full h-full object-contain object-center group-hover:opacity-90 transition-opacity p-4"
+                        className={`w-full h-full object-contain object-center group-hover:opacity-90 transition-opacity p-4 ${
+                          !product.inStock ? 'opacity-70' : ''
+                        }`}
                       />
+                      {!product.inStock && (
+                        <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
+                          <span className="bg-black text-white px-3 py-1 rounded-md text-sm font-medium">
+                            Out of Stock
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-4">
                       <div>
@@ -915,6 +991,9 @@ function Bags() {
           scrollbar-width: none;
         }
       `}</style>
+
+      {/* Footer */}
+      <ShopFooter />
     </div>
   );
 }

@@ -155,9 +155,12 @@ function Home() {
     }
   ];
 
-  // Handle category click - navigate to Shop page with category
+  // Handle category click - navigate to correct page for each category
   const handleCategoryClick = (category) => {
-    navigate('/shop', { state: { category } });
+    if (category === "Men") navigate("/men");
+    else if (category === "Women") navigate("/women");
+    else if (category === "Home Dec") navigate("/homeDec");
+    else if (category === "Bags") navigate("/Bags"); // Use "/Bags" if your route is capital B
   };
 
   // Filter products based on active filter
@@ -577,7 +580,7 @@ function Home() {
               <div 
                 key={`category-${category}`}
                 className="relative rounded-xl overflow-hidden shadow-md transition-all hover:shadow-xl hover:scale-[1.02] cursor-pointer"
-                onClick={() => handleCategoryClick(category)}
+                onClick={() => handleCategoryClick(category)} // <-- This will now navigate correctly
               >
                 {/* Category Cover Image */}
                 <div className="w-100 h-100">
