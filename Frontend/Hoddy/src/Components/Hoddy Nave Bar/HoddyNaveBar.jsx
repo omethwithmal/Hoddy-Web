@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const menuItems = [
   { name: "Home", scrollTo: "home" },
@@ -34,6 +35,7 @@ function HoddyNaveBar({
   setCartOpen,
   onShopDropdownNavigate // <-- Add this prop
 }) {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -328,7 +330,10 @@ function HoddyNaveBar({
                       <React.Fragment key={drop.name}>
                         <button
                           onClick={() => {
-                            if (onShopDropdownNavigate) onShopDropdownNavigate(drop.name);
+                            if (drop.name === "Men") navigate("/men");
+                            else if (drop.name === "Women") navigate("/women");
+                            else if (drop.name === "Bags") navigate("/bags");
+                            else if (drop.name === "Home Dec") navigate("/homeDec");
                           }}
                           className="block px-6 py-2 text-base font-semibold hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide text-left w-full"
                           style={{ letterSpacing: '0.02em' }}
@@ -457,7 +462,10 @@ function HoddyNaveBar({
                       <React.Fragment key={drop.name}>
                         <button
                           onClick={() => {
-                            if (onShopDropdownNavigate) onShopDropdownNavigate(drop.name);
+                            if (drop.name === "Men") navigate("/men");
+                            else if (drop.name === "Women") navigate("/women");
+                            else if (drop.name === "Bags") navigate("/bags");
+                            else if (drop.name === "Home Dec") navigate("/homeDec");
                             setShopDropdownOpen(false);
                             setMobileMenuOpen(false);
                           }}
