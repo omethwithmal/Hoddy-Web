@@ -16,7 +16,6 @@ const menuItems = [
   { name: "Contact Us", scrollTo: "contactUs" },
 ];
 
-// Add this helper function for menu item underline
 const UnderlineLink = ({ children, className = '', as: Component = 'span', ...props }) => (
   <Component className={`relative group ${className}`} {...props}>
     <span className="z-10 relative">{children}</span>
@@ -33,31 +32,21 @@ function HoddyNaveBar({
   setCartItems,
   cartOpen,
   setCartOpen,
-  onShopDropdownNavigate // <-- Add this prop
+  onShopDropdownNavigate
 }) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const profileDropdownRef = useRef(null);
   const cartDropdownRef = useRef(null);
-  const closeTimeoutRef = useRef();
   const [cartAnimation, setCartAnimation] = useState(false);
 
-  // Handle cart click
   const handleCartClick = () => {
     setCartOpen(!cartOpen);
-    // Close other dropdowns when cart opens
-    if (!cartOpen) {
-      setProfileDropdownOpen(false);
-    }
   };
 
-  // Calculate cart total and count from props
   const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
-  // Handle scroll navigation
   const handleScrollTo = (section) => {
     switch(section) {
       case 'home':
@@ -79,30 +68,22 @@ function HoddyNaveBar({
     setShopDropdownOpen(false);
   };
 
-  // Auto-close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event) {
-      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
-        setProfileDropdownOpen(false);
-      }
       if (cartDropdownRef.current && !cartDropdownRef.current.contains(event.target)) {
         setCartOpen(false);
       }
     }
     
-    if (profileDropdownOpen || cartOpen) {
+    if (cartOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [profileDropdownOpen, cartOpen]);
+  }, [cartOpen]);
 
-  // Cleanup timeout on unmount
-  useEffect(() => () => clearTimeout(closeTimeoutRef.current), []);
-
-  // Trigger animation when cart items change
   useEffect(() => {
     if (cartItems.length > 0) {
       setCartAnimation(true);
@@ -111,7 +92,6 @@ function HoddyNaveBar({
     }
   }, [cartItems]);
 
-  // Update quantity of cart item
   const updateQuantity = (id, color, size, newQuantity) => {
     if (newQuantity < 1) return;
     setCartItems(cartItems.map(item =>
@@ -121,18 +101,15 @@ function HoddyNaveBar({
     ));
   };
 
-  // Remove item from cart
   const removeItem = (id, color, size) => {
     setCartItems(cartItems.filter(item =>
       !(item.id === id && item.color === color && item.size === size)
     ));
   };
 
-  // Cart Popup Component
   const CartPopup = () => (
     <div className="absolute right-0 mt-3 w-96 bg-white border border-gray-100 rounded-xl shadow-xl z-50 animate-dropdown-fade overflow-hidden">
       <div className="p-0">
-        {/* Cart Header */}
         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-gray-900">Your Shopping Cart ({cartCount})</h3>
@@ -147,7 +124,6 @@ function HoddyNaveBar({
           </div>
         </div>
         
-        {/* Cart Items */}
         <div className="max-h-96 overflow-y-auto">
           {cartItems.length === 0 ? (
             <div className="py-8 text-center">
@@ -213,7 +189,6 @@ function HoddyNaveBar({
           )}
         </div>
         
-        {/* Cart Footer */}
         {cartItems.length > 0 && (
           <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
             <div className="flex justify-between text-base font-medium text-gray-900 mb-4">
@@ -244,7 +219,6 @@ function HoddyNaveBar({
     <nav className="bg-white text-black w-full shadow-lg sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex justify-between h-20 items-center">
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-end text-3xl font-normal select-none h-14" style={{ width: '120px', minWidth: '120px' }}>
             <span
               className="text-black tracking-wider pb-2"
@@ -267,9 +241,7 @@ function HoddyNaveBar({
             </span>
           </div>
           
-          {/* Mobile Cart and Profile Icons */}
           <div className="flex items-center space-x-4 md:hidden ml-auto">
-            {/* Cart Icon */}
             <div className="relative" ref={cartDropdownRef}>
               <button
                 onClick={handleCartClick}
@@ -292,28 +264,14 @@ function HoddyNaveBar({
               {cartOpen && <CartPopup />}
             </div>
             
-            {/* Profile Icon */}
-            <div className="relative" ref={profileDropdownRef}>
-              <button
-                onClick={() => setProfileDropdownOpen((open) => !open)}
-                className="focus:outline-none flex items-center transition-colors duration-200"
-                aria-label="Profile"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9A3.75 3.75 0 1112 5.25 3.75 3.75 0 0115.75 9zM4.5 19.5a7.5 7.5 0 1115 0v.75a.75.75 0 01-.75.75h-13.5a.75.75 0 01-.75-.75v-.75z" />
-                </svg>
-              </button>
-              {profileDropdownOpen && (
-                <div className="md:hidden absolute right-0 mt-2 top-full w-64 max-w-xs bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 py-6 px-4 flex flex-col gap-3 animate-dropdown-fade">
-                  <a href="#" className="block py-3 text-lg font-normal hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide text-center" style={{ letterSpacing: '0.02em' }}>Login</a>
-                  <div className="mx-4 border-b border-gray-200 opacity-60"></div>
-                  <a href="#" className="block py-3 text-lg font-normal hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide text-center" style={{ letterSpacing: '0.02em' }}>Register</a>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => navigate("/AuthPage")}
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+            >
+              Login/Register
+            </button>
           </div>
           
-          {/* Desktop Menu */}
           <div className="hidden md:flex space-x-10 items-center">
             {menuItems.map((item) =>
               item.dropdown ? (
@@ -356,7 +314,7 @@ function HoddyNaveBar({
                       : item.name === "Shop"
                       ? scrollToShop
                       : item.name === "About Us"
-                      ? scrollToAboutUs
+                      ? () => navigate("/AboutUs")
                       : item.name === "Contact Us"
                       ? scrollToContactUs
                       : undefined
@@ -369,9 +327,7 @@ function HoddyNaveBar({
             )}
           </div>
           
-          {/* Desktop Icons */}
           <div className="hidden md:flex items-center space-x-6 ml-4">
-            {/* Cart Icon with Popup */}
             <div className="relative" ref={cartDropdownRef}>
               <button
                 onClick={handleCartClick}
@@ -394,37 +350,14 @@ function HoddyNaveBar({
               {cartOpen && <CartPopup />}
             </div>
             
-            {/* Profile Icon */}
-            <div
-              className="relative"
-              ref={profileDropdownRef}
-              onMouseLeave={() => {
-                closeTimeoutRef.current = setTimeout(() => setProfileDropdownOpen(false), 200);
-              }}
-              onMouseEnter={() => {
-                clearTimeout(closeTimeoutRef.current);
-              }}
+            <button
+              onClick={() => navigate("/AuthPage")}
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
             >
-              <button
-                onClick={() => setProfileDropdownOpen((open) => !open)}
-                className="focus:outline-none flex items-center transition-colors duration-200"
-                aria-label="Profile"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9A3.75 3.75 0 1112 5.25 3.75 3.75 0 0115.75 9zM4.5 19.5a7.5 7.5 0 1115 0v.75a.75.75 0 01-.75.75h-13.5a.75.75 0 01-.75-.75v-.75z" />
-                </svg>
-              </button>
-              {profileDropdownOpen && (
-                <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-2xl shadow-2xl z-30 py-3 px-2 flex flex-col gap-1 animate-dropdown-fade">
-                  <a href="#" className="block px-6 py-2 text-base font-semibold hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide" style={{ letterSpacing: '0.02em' }}>Login</a>
-                  <div className="mx-4 border-b border-gray-200 opacity-60"></div>
-                  <a href="#" className="block px-6 py-2 text-base font-semibold hover:bg-gray-100 text-black rounded-xl transition-colors duration-200 tracking-wide" style={{ letterSpacing: '0.02em' }}>Register</a>
-                </div>
-              )}
-            </div>
+              Login/Register
+            </button>
           </div>
           
-          {/* Mobile Hamburger */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -443,7 +376,6 @@ function HoddyNaveBar({
         </div>
       </div>
       
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 px-4 pb-4 rounded-b-2xl shadow-2xl">
           {menuItems.map((item) =>
@@ -498,7 +430,7 @@ function HoddyNaveBar({
                       }
                     : item.name === "About Us"
                     ? () => {
-                        scrollToAboutUs();
+                        navigate("/AboutUs");
                         setMobileMenuOpen(false);
                       }
                     : item.name === "Contact Us"

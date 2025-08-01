@@ -10,6 +10,8 @@ import Bags from "./Components/Shop/bag";
 import HomeDec from "./Components/Shop/homeDec";
 import ShopFooter from "./Components/Shop/ShopFooter";
 import AboutUs from "./Components/Home/aboutUs";
+import ProfilePage from "./Components/Profile/ProfilePage";
+import OrdersPage from "./Components/Profile/OrdersPage";
 
 
 
@@ -34,6 +36,8 @@ function App() {
         <Route path="HomeDec" element={<HomeDec />} />
         <Route path="ShopFooter" element={<ShopFooter />} />
         <Route path="AboutUs" element={<AboutUs />} />
+        <Route path="ProfilePage" element={<ProfilePage />} />
+        <Route path="OrdersPage" element={<OrdersPage />} />
       </Routes>
     </Router>
   );
