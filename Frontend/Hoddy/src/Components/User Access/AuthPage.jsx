@@ -1,10 +1,35 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import { useState, useEffect, useRef } from 'react';
+import { FcGoogle } from 'react-icons/fc';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-function AuthForm() {
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [welcomeAnimation, setWelcomeAnimation] = useState(false);
+  const [authError, setAuthError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const canvasRef = useRef(null);
+  const fullWelcomeText = "Welcome to HODDY";
+  
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -12,165 +37,349 @@ function AuthForm() {
     password: '',
     confirmPassword: ''
   });
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
+
+  // Handle Google Sign In
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setAuthError(null);
+    
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      
+      // The signed-in user info
+      const user = result.user;
+      
+      console.log('Google authentication successful:', user);
+      // Here you would typically send the user data to your backend
+      // and handle the user session in your application
+      
+      // For demo purposes, we'll just show an alert
+      alert(`Welcome ${user.displayName}! Authentication successful.`);
+      
+    } catch (error) {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      
+      console.error('Google authentication error:', errorCode, errorMessage);
+      setAuthError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Particle animation for the welcome section background
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = window.innerWidth < 768 ? 30 : 60;
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    // Initialize particles
+    const initParticles = () => {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 3 + 1,
+          speedX: Math.random() * 1 - 0.5,
+          speedY: Math.random() * 1 - 0.5,
+          color: `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`
+        });
+      }
+    };
+
+    // Animation loop
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        
+        // Update position
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        // Bounce off edges
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        
+        // Draw connections between close particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 100) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 - distance / 500})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      requestAnimationFrame(animate);
+    };
+
+    // Handle resize
+    const handleResize = () => {
+      resizeCanvas();
+      initParticles();
+    };
+
+    // Initial setup
+    resizeCanvas();
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Fade-in and slide-up animation for welcome text
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setWelcomeAnimation(true);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+    if (isLogin) {
+      console.log('Login data:', { 
+        username: formData.username, 
+        password: formData.password 
+      });
+    } else {
+      if (formData.password !== formData.confirmPassword) {
+        alert("Passwords don't match!");
+        return;
+      }
+      console.log('Signup data:', {
+        email: formData.email,
+        mobile: formData.mobile,
+        password: formData.password
+      });
     }
-    console.log(isLogin ? 'Logging in' : 'Signing up', formData);
-    // Add your authentication logic here
-    navigate('/dashboard'); // Redirect after successful auth
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log('Google login success:', decoded);
-    
-    // Auto-fill form with Google data
-    setFormData({
-      ...formData,
-      email: decoded.email,
-      username: decoded.name.split(' ')[0] || '',
-    });
-
-    // Simulate login success
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 1000);
-  };
-
-  const handleGoogleError = () => {
-    console.log('Google login failed');
-    alert('Google login failed. Please try again.');
+  const handleForgotPasswordSubmit = (e) => {
+    e.preventDefault();
+    alert(`Password reset link sent to ${forgotPasswordEmail}`);
+    setShowForgotPassword(false);
+    setForgotPasswordEmail('');
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Toggle Switch */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white p-1 rounded-full shadow-md">
-            <button
-              onClick={() => {
-                setIsLogin(true);
-                setShowForgotPassword(false);
-              }}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                isLogin && !showForgotPassword 
-                  ? 'bg-black text-white' 
-                  : 'text-gray-700 hover:text-black'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setIsLogin(false);
-                setShowForgotPassword(false);
-              }}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                !isLogin && !showForgotPassword 
-                  ? 'bg-black text-white' 
-                  : 'text-gray-700 hover:text-black'
-              }`}
-            >
-              Sign Up
-            </button>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
+      {/* Main Card */}
+      <div className="w-full max-w-md md:max-w-3xl bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="flex flex-col md:flex-row">
+          {/* Welcome Section with animated background */}
+          <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 to-black p-8 md:p-10 flex flex-col justify-center relative overflow-hidden">
+            {/* Canvas for particle animation */}
+            <canvas 
+              ref={canvasRef} 
+              className="absolute inset-0 w-full h-full opacity-20"
+            />
+            
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-transparent to-black/70 z-0" />
+            
+            <div className="text-center relative z-10">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-5 tracking-wide font-montserrat">
+                <span className={`block transition-all duration-1000 ease-out ${welcomeAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                  {fullWelcomeText}
+                </span>
+              </h1>
+              <p className={`text-base md:text-lg text-gray-300 mt-5 mb-5 md:mb-7 transition-all duration-1000 ease-out delay-300 ${welcomeAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                Premium Sri Lankan apparel for the global fashion connoisseur
+              </p>
+              <div className={`flex justify-center transition-all duration-1000 ease-out delay-500 ${welcomeAnimation ? 'opacity-100' : 'opacity-0'}`}>
+                <div className="w-32 h-0.5 bg-white mb-5 md:mb-7"></div>
+              </div>
+              <p className={`text-sm md:text-base text-gray-400 transition-all duration-1000 ease-out delay-700 ${welcomeAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                Join our community of fashion enthusiasts worldwide
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Auth Card */}
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-          <div className="p-8">
-            {showForgotPassword ? (
-              <>
-                <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">Reset Password</h2>
-                <p className="text-center text-gray-700 mb-8">Enter your email to receive a reset link</p>
-                
+          {/* Auth Form Section */}
+          <div className="w-full md:w-1/2 p-6 sm:p-8">
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                  <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Forgot Password</h2>
+                  <p className="text-sm md:text-base text-gray-600 mb-4">
+                    Enter your email address and we'll send you a link to reset your password.
+                  </p>
+                  <form onSubmit={handleForgotPasswordSubmit}>
+                    <div className="mb-4">
+                      <label htmlFor="forgotEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="forgotEmail"
+                        value={forgotPasswordEmail}
+                        onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                        required
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotPassword(false)}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-3 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800"
+                      >
+                        Send Reset Link
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-center mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-black">HODDY</h1>
+            </div>
+            <p className="text-center text-sm text-gray-600 mb-6">Sign in to your account</p>
+            
+            {authError && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {authError}
+              </div>
+            )}
+            
+            <div className="bg-white rounded-lg overflow-hidden">
+              <div className="flex border-b">
+                <button
+                  className={`flex-1 py-3 text-sm md:text-base font-medium ${isLogin ? 'text-black border-b-2 border-black' : 'text-gray-500'}`}
+                  onClick={() => setIsLogin(true)}
+                >
+                  Login
+                </button>
+                <button
+                  className={`flex-1 py-3 text-sm md:text-base font-medium ${!isLogin ? 'text-black border-b-2 border-black' : 'text-gray-500'}`}
+                  onClick={() => setIsLogin(false)}
+                >
+                  Sign Up
+                </button>
+              </div>
+              
+              <div className="pt-4">
                 <form onSubmit={handleSubmit}>
-                  <div className="mb-6">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all"
-                      required
-                    />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all shadow-md"
-                  >
-                    Send Reset Link
-                  </button>
-                  
-                  <div className="mt-4 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowForgotPassword(false)}
-                      className="text-black hover:text-gray-700 text-sm font-medium"
-                    >
-                      Back to Login
-                    </button>
-                  </div>
-                </form>
-              </>
-            ) : (
-              <>
-                <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">
-                  {isLogin ? 'Welcome Back' : 'Create Account'}
-                </h2>
-                <p className="text-center text-gray-700 mb-8">
-                  {isLogin ? 'Login to access your account' : 'Join us today!'}
-                </p>
-
-                <form onSubmit={handleSubmit}>
-                  {/* Google Login Button inside the form */}
-                  <div className="mb-6">
-                    <GoogleLogin
-                      onSuccess={handleGoogleSuccess}
-                      onError={handleGoogleError}
-                      useOneTap
-                      theme="outline"
-                      size="large"
-                      text={isLogin ? "continue_with" : "signup_with"}
-                      shape="rectangular"
-                      width="100%"
-                      logo_alignment="left"
-                      locale="en_US"
-                      auto_select={false}
-                      cancel_on_tap_outside={true}
-                      context={isLogin ? "signin" : "signup"}
-                    />
-                  </div>
-
-                  <div className="flex items-center mb-6">
-                    <div className="flex-1 border-t border-gray-300"></div>
-                    <span className="px-3 text-gray-500 text-sm">OR</span>
-                    <div className="flex-1 border-t border-gray-300"></div>
-                  </div>
-
-                  {!isLogin && (
+                  {isLogin ? (
                     <>
                       <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+                        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                          Username
+                        </label>
+                        <input
+                          type="text"
+                          id="username"
+                          name="username"
+                          value={formData.username}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="mb-4 relative">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                          Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-10"
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <FiEyeOff className="text-gray-500 text-sm" />
+                            ) : (
+                              <FiEye className="text-gray-500 text-sm" />
+                            )}
+                          </button>
+                        </div>
+                        <div className="text-right mt-1">
+                          <button 
+                            type="button" 
+                            onClick={() => setShowForgotPassword(true)}
+                            className="text-xs text-gray-600 hover:underline"
+                          >
+                            Forgot password?
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <button
+                        type="submit"
+                        className="w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200 mb-4 text-sm md:text-base font-medium"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Processing...' : 'Login'}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mb-4">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                           Email
                         </label>
                         <input
@@ -179,13 +388,13 @@ function AuthForm() {
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                           required
                         />
                       </div>
                       
                       <div className="mb-4">
-                        <label htmlFor="mobile" className="block text-sm font-medium text-gray-900 mb-2">
+                        <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
                           Mobile Number
                         </label>
                         <input
@@ -194,156 +403,112 @@ function AuthForm() {
                           name="mobile"
                           value={formData.mobile}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                           required
                         />
                       </div>
+                      
+                      <div className="mb-4 relative">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                          Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-10"
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <FiEyeOff className="text-gray-500 text-sm" />
+                            ) : (
+                              <FiEye className="text-gray-500 text-sm" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4 relative">
+                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                          Confirm Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-10"
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <FiEyeOff className="text-gray-500 text-sm" />
+                            ) : (
+                              <FiEye className="text-gray-500 text-sm" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <button
+                        type="submit"
+                        className="w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200 mb-4 text-sm md:text-base font-medium"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Processing...' : 'Sign Up'}
+                      </button>
                     </>
                   )}
-
-                  {isLogin && (
-                    <div className="mb-4">
-                      <label htmlFor="username" className="block text-sm font-medium text-gray-900 mb-2">
-                        Username
-                      </label>
-                      <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all"
-                        required
-                      />
-                    </div>
-                  )}
-
-                  <div className="mb-4">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all pr-10"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      >
-                        {showPassword ? (
-                          <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                          </svg>
-                        ) : (
-                          <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
+                  
+                  <div className="flex items-center mb-4">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="mx-3 text-gray-500 text-xs md:text-sm">OR CONTINUE WITH</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
                   </div>
-
-                  {!isLogin && (
-                    <div className="mb-6">
-                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 mb-2">
-                        Confirm Password
-                      </label>
-                      <div className="relative">
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          value={formData.confirmPassword}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all pr-10"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                        >
-                          {showConfirmPassword ? (
-                            <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                            </svg>
-                          ) : (
-                            <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {isLogin && (
-                    <div className="mt-2 text-right mb-6">
-                      <button
-                        type="button"
-                        onClick={() => setShowForgotPassword(true)}
-                        className="text-sm text-black hover:text-gray-700 font-medium"
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-                  )}
-
+                  
                   <button
-                    type="submit"
-                    className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all shadow-md mb-4"
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-200 mb-4 text-sm md:text-base"
+                    disabled={isLoading}
                   >
-                    {isLogin ? 'Login' : 'Sign Up'}
+                    <FcGoogle className="text-lg" />
+                    <span className="font-medium">Google</span>
                   </button>
                 </form>
-              </>
-            )}
-          </div>
-          
-          {/* Footer */}
-          <div className="bg-gray-100 px-8 py-6 text-center">
-            {isLogin ? (
-              <p className="text-gray-700">
-                Don't have an account?{' '}
-                <button
-                  onClick={() => setIsLogin(false)}
-                  className="text-black hover:text-gray-700 font-medium"
+              </div>
+            </div>
+            
+            <div className="text-center mt-4">
+              <p className="text-xs md:text-sm text-gray-600">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button 
+                  onClick={() => setIsLogin(!isLogin)} 
+                  className="text-black font-medium hover:underline ml-1"
                 >
-                  Sign up
+                  {isLogin ? 'Sign up' : 'Login'}
                 </button>
               </p>
-            ) : (
-              <p className="text-gray-700">
-                Already have an account?{' '}
-                <button
-                  onClick={() => setIsLogin(true)}
-                  className="text-black hover:text-gray-700 font-medium"
-                >
-                  Login
-                </button>
-              </p>
-            )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-// Wrap the AuthForm with GoogleOAuthProvider
-export default function AuthPage() {
-  return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
-      <AuthForm />
-    </GoogleOAuthProvider>
-  );
-}
+export default AuthForm;
