@@ -221,15 +221,15 @@ const OrdersPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
       {/* Hero Section */}
-      <div className="relative py-20 bg-gradient-to-r from-blue-800 to-purple-700 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Your Orders</h1>
-          <p className="text-lg md:text-xl text-gray-100 max-w-2xl mx-auto">
-            View your order history and track current orders
-          </p>
-        </div>
-      </div>
+<div className="relative py-20 bg-black overflow-hidden">
+  <div className="absolute inset-0 bg-black opacity-80"></div>
+  <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center relative z-10">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">Your Orders</h1>
+    <p className="text-lg md:text-xl text-gray-100 max-w-2xl mx-auto">
+      View your order history and track current orders
+    </p>
+  </div>
+</div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -262,39 +262,59 @@ const OrdersPage = () => {
             </div>
             
             <div className="mt-6 flex flex-col sm:flex-row gap-4">
-              <div className="flex-1 grid grid-cols-2 gap-3 sm:flex sm:space-x-3">
-                <button
-                  onClick={() => setFilter('all')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  All Orders
-                </button>
-                <button
-                  onClick={() => setFilter('processing')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${filter === 'processing' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  Processing
-                </button>
-                <button
-                  onClick={() => setFilter('shipped')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${filter === 'shipped' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  Shipped
-                </button>
-                <button
-                  onClick={() => setFilter('delivered')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${filter === 'delivered' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  Delivered
-                </button>
-                <button
-                  onClick={() => setFilter('cancelled')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${filter === 'cancelled' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                >
-                  Cancelled
-                </button>
-              </div>
-              
+  <div className="flex-1 grid grid-cols-2 gap-3 sm:flex sm:space-x-3">
+    <button
+      onClick={() => setFilter('all')}
+      className={`px-3 py-2 rounded-md text-sm font-medium ${
+        filter === 'all' 
+          ? 'bg-black text-white' 
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+      }`}
+    >
+      All Orders
+    </button>
+    <button
+      onClick={() => setFilter('processing')}
+      className={`px-3 py-2 rounded-md text-sm font-medium ${
+        filter === 'processing' 
+          ? 'bg-black text-white' 
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+      }`}
+    >
+      Processing
+    </button>
+    <button
+      onClick={() => setFilter('shipped')}
+      className={`px-3 py-2 rounded-md text-sm font-medium ${
+        filter === 'shipped' 
+          ? 'bg-black text-white' 
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+      }`}
+    >
+      Shipped
+    </button>
+    <button
+      onClick={() => setFilter('delivered')}
+      className={`px-3 py-2 rounded-md text-sm font-medium ${
+        filter === 'delivered' 
+          ? 'bg-black text-white' 
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+      }`}
+    >
+      Delivered
+    </button>
+    <button
+      onClick={() => setFilter('cancelled')}
+      className={`px-3 py-2 rounded-md text-sm font-medium ${
+        filter === 'cancelled' 
+          ? 'bg-black text-white' 
+          : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+      }`}
+    >
+      Cancelled
+    </button>
+  </div>
+  
               <div className="relative min-w-[180px]">
                 <select 
                   value={timeFilter}
