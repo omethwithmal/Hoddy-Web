@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import HoddyNaveBar from '../Hoddy Nave Bar/HoddyNaveBar';
 
 const desktopImages = [
-  '/src/assets/images/Home_Section/Home 1.jpg',
-  '/src/assets/images/Home_Section/Home 2.jpg',
+  '/src/assets/images/Home_Section/Home 3.jpg',
+  '/src/assets/images/Home_Section/Home 4.jpg',
+  '/src/assets/images/Home_Section/Home 3.jpg',
 ];
 const mobileImages = [
   '/src/assets/images/Home_Section/Home_Mobile-1.jpg',
@@ -274,19 +275,19 @@ function Home() {
         setCartOpen={setCartOpen}
       />
       
-      {/* Home Section with ref */}
-      <div ref={homeRef} className="w-full min-h-screen bg-white flex flex-col">
+      {/* Home Section with ref - Reduced height */}
+      <div ref={homeRef} className="w-full h-[85vh] bg-white flex flex-col">
         {/* Mobile Fullscreen Image */}
         <img
           src={images[current]}
           alt={`Home Slide ${current + 1}`}
-          className="block sm:hidden w-screen h-screen object-contain object-center rounded-none transition-all duration-700"
+          className="block sm:hidden w-full h-full object-contain object-center rounded-none transition-all duration-700"
         />
         {/* Desktop Image */}
         <img
           src={images[current]}
           alt={`Home Slide ${current + 1}`}
-          className="hidden sm:block w-full h-[calc(100vh-5rem)] object-cover object-center rounded-none transition-all duration-700"
+          className="hidden sm:block w-full h-full object-cover object-center rounded-none transition-all duration-700"
         />
       </div>
 
