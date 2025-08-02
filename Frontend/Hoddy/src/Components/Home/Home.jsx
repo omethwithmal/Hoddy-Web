@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import HoddyNaveBar from '../Hoddy Nave Bar/HoddyNaveBar';
 
 const desktopImages = [
-  '/src/assets/images/Home_Section/Home 3.jpg',
+  '/src/assets/images/Home_Section/Home 0.jpg',
   '/src/assets/images/Home_Section/Home 4.jpg',
   '/src/assets/images/Home_Section/Home 3.jpg',
 ];
 const mobileImages = [
-  '/src/assets/images/Home_Section/Home_Mobile-1.jpg',
-  '/src/assets/images/Home_Section/Home_Mobile_2.jpg',
+  '/src/assets/images/Home_Section/Home_Mobile-3.jpg',
+  '/src/assets/images/Home_Section/Home_Mobile_4.jpg',
 ];
 
 // Category cover images
 const categoryCoverImages = {
-  'Men': '/src/assets/images/Home_Section/Home 1.jpg',
-  'Women': '/src/assets/images/Home_Section/Home 1.jpg',
+  'Men': '/src/assets/images/Shop_Men/Men 7.jpg',
+  'Women': '/src/assets/images/Shop_Women/women 5.jpg',
   'Home Dec': '/src/assets/images/Home_Section/Home 1.jpg',
   'Bags': '/src/assets/images/Home_Section/Home 1.jpg'
 };
@@ -67,13 +67,13 @@ function Home() {
     {
       id: 1,
       name: 'Premium Cotton Hoodie',
-      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      mainImage: '/src/assets/images/Shop_Women/women 1.jpg',
       images: [
-        '/src/assets/images/Collection/Cart.jpg',
-        '/src/assets/images/Collection/Cart_2.jpg',
-        '/src/assets/images/Collection/Cart_3.jpg',
-        '/src/assets/images/Collection/Cart_4.jpg',
-        '/src/assets/images/Collection/Cart_5.jpg'
+        '/src/assets/images/Shop_Women/women 1.jpg',
+        '/src/assets/images/Shop_Women/women 4.jpg',
+        '/src/assets/images/Shop_Women/women 6.jpg',
+        '/src/assets/images/Shop_Women/women 3.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg'
       ],
       description: 'Our premium cotton hoodie offers unmatched comfort and style. Made with 100% organic cotton, this hoodie features a relaxed fit, adjustable drawstring hood, and kangaroo pocket for ultimate comfort.',
       price: 'Rs. 4,500',
@@ -85,13 +85,13 @@ function Home() {
     {
       id: 2,
       name: 'Classic Crewneck',
-      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      mainImage: '/src/assets/images/Shop_Women/women 2.jpg',
       images: [
-        '/src/assets/images/Collection/Cart.jpg',
-        '/src/assets/images/Collection/Cart_2.jpg',
-        '/src/assets/images/Collection/Cart_3.jpg',
-        '/src/assets/images/Collection/Cart_4.jpg',
-        '/src/assets/images/Collection/Cart_5.jpg'
+        '/src/assets/images/Shop_Women/women 5.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg',
+        '/src/assets/images/Shop_Women/women 3.jpg',
+        '/src/assets/images/Shop_Women/women 4.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg'
       ],
       description: 'The essential crewneck sweater made from a premium cotton blend. Features ribbed cuffs and hem for a classic fit that never goes out of style.',
       price: 'Rs. 3,900',
@@ -103,13 +103,13 @@ function Home() {
     {
       id: 3,
       name: 'Urban Oversized Tee',
-      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      mainImage: '/src/assets/images/Shop_Men/Men 7.jpg',
       images: [
-        '/src/assets/images/Collection/Cart.jpg',
-        '/src/assets/images/Collection/Cart_2.jpg',
-        '/src/assets/images/Collection/Cart_3.jpg',
-        '/src/assets/images/Collection/Cart_4.jpg',
-        '/src/assets/images/Collection/Cart_5.jpg'
+        '/src/assets/images/Shop_Women/women 5.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg',
+        '/src/assets/images/Shop_Women/women 3.jpg',
+        '/src/assets/images/Shop_Women/women 4.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg'
       ],
       description: 'Oversized fit t-shirt with dropped shoulders for a contemporary urban look. Made from soft, breathable fabric for all-day comfort.',
       price: 'Rs. 2,800',
@@ -121,13 +121,13 @@ function Home() {
     {
       id: 4,
       name: 'Minimalist Sweatshirt',
-      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      mainImage: '/src/assets/images/Shop_Women/women 4.jpg',
       images: [
-        '/src/assets/images/Collection/Cart.jpg',
-        '/src/assets/images/Collection/Cart_2.jpg',
-        '/src/assets/images/Collection/Cart_3.jpg',
-        '/src/assets/images/Collection/Cart_4.jpg',
-        '/src/assets/images/Collection/Cart_5.jpg'
+        '/src/assets/images/Shop_Women/women 5.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg',
+        '/src/assets/images/Shop_Women/women 3.jpg',
+        '/src/assets/images/Shop_Women/women 4.jpg',
+        '/src/assets/images/Shop_Women/women 1.jpg'
       ],
       description: 'Clean, minimalist sweatshirt with subtle branding. Features a relaxed fit and premium fleece lining for warmth without bulk.',
       price: 'Rs. 4,200',
@@ -139,13 +139,13 @@ function Home() {
     {
       id: 5,
       name: 'Street Style Zip-Up',
-      mainImage: '/src/assets/images/Collection/Cart.jpg',
+      mainImage: '/src/assets/images/Shop_Women/women 5.jpg',
       images: [
-        '/src/assets/images/Collection/Cart.jpg',
-        '/src/assets/images/Collection/Cart_2.jpg',
-        '/src/assets/images/Collection/Cart_3.jpg',
-        '/src/assets/images/Collection/Cart_4.jpg',
-        '/src/assets/images/Collection/Cart_5.jpg'
+        '/src/assets/images/Shop_Women/women 8.jpg',
+        '/src/assets/images/Shop_Women/women 2.jpg',
+        '/src/assets/images/Shop_Women/women 3.jpg',
+        '/src/assets/images/Shop_Women/women 4.jpg',
+        '/src/assets/images/Shop_Women/women 10.jpg'
       ],
       description: 'Modern zip-up hoodie with streetwear-inspired details. Features a front zip closure, ribbed cuffs, and a comfortable fit for everyday wear.',
       price: 'Rs. 5,100',
@@ -567,7 +567,7 @@ function Home() {
           {/* Wider Banner Image Section */}
           <div className="w-full mb-12 px-0">
             <img 
-              src="/src/assets/images/Collection/Banner Image.jpg" 
+              src="/src/assets/images/Collection/Banner Image1.jpg" 
               alt="Shop Banner" 
               className="w-full h-auto object-cover"
             />
