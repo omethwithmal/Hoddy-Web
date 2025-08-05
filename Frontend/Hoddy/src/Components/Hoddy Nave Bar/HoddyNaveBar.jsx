@@ -107,8 +107,8 @@ function HoddyNaveBar({
     ));
   };
 
-  const CartPopup = () => (
-    <div className="absolute right-0 mt-3 w-96 bg-white border border-gray-100 rounded-xl shadow-xl z-50 animate-dropdown-fade overflow-hidden">
+  const CartPopup = ({ isMobile = false }) => (
+    <div className={`absolute ${isMobile ? 'right-0 top-full mt-2' : 'right-3 mt-'} w-96 bg-white border border-gray-100 rounded-xl shadow-xl z-50 animate-dropdown-fade overflow-hidden`}>
       <div className="p-0">
         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
@@ -241,7 +241,15 @@ function HoddyNaveBar({
             </span>
           </div>
           
+          {/* Mobile view buttons - swapped positions */}
           <div className="flex items-center space-x-4 md:hidden ml-auto">
+            <button
+              onClick={() => navigate("/AuthPage")}
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+            >
+              Login/Register
+            </button>
+            
             <div className="relative" ref={cartDropdownRef}>
               <button
                 onClick={handleCartClick}
@@ -249,10 +257,20 @@ function HoddyNaveBar({
                 aria-label="Cart"
               >
                 <div className={`relative ${cartAnimation ? 'animate-bounce' : ''}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.272 1.017m0 0l1.357 5.086m-.001 0A2.25 2.25 0 008.25 12.75h7.5a2.25 2.25 0 002.2-1.817l1.2-6A1.125 1.125 0 0018.825 3H5.25m0 0L3.977 8.938m1.273-5.938L5.25 3" />
-                    <circle cx="9" cy="20" r="1.25" />
-                    <circle cx="17" cy="20" r="1.25" />
+                  {/* Creative Cart Icon */}
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    strokeWidth={1.5} 
+                    stroke="currentColor" 
+                    className="w-7 h-7"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" 
+                    />
                   </svg>
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-2 bg-yellow-400 text-black text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md border border-yellow-200">
@@ -261,15 +279,8 @@ function HoddyNaveBar({
                   )}
                 </div>
               </button>
-              {cartOpen && <CartPopup />}
+              {cartOpen && <CartPopup isMobile />}
             </div>
-            
-            <button
-              onClick={() => navigate("/AuthPage")}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
-            >
-              Login/Register
-            </button>
           </div>
           
           <div className="hidden md:flex space-x-10 items-center">
@@ -331,14 +342,24 @@ function HoddyNaveBar({
             <div className="relative" ref={cartDropdownRef}>
               <button
                 onClick={handleCartClick}
-                className="relative focus:outline-none transition-colors duration-200"
+                className="relative focus:outline-none transition-colors duration-200 group"
                 aria-label="Cart"
               >
                 <div className={`relative ${cartAnimation ? 'animate-bounce' : ''}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.272 1.017m0 0l1.357 5.086m-.001 0A2.25 2.25 0 008.25 12.75h7.5a2.25 2.25 0 002.2-1.817l1.2-6A1.125 1.125 0 0018.825 3H5.25m0 0L3.977 8.938m1.273-5.938L5.25 3" />
-                    <circle cx="9" cy="20" r="1.25" />
-                    <circle cx="17" cy="20" r="1.25" />
+                  {/* Creative Cart Icon with hover effect */}
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    strokeWidth={1.5} 
+                    stroke="currentColor" 
+                    className="w-7 h-7 group-hover:stroke-[1.7] transition-all"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.272 1.036M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" 
+                    />
                   </svg>
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-2 bg-yellow-400 text-black text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md border border-yellow-200">
@@ -350,11 +371,36 @@ function HoddyNaveBar({
               {cartOpen && <CartPopup />}
             </div>
             
+            {/* Creative Profile Icon */}
+            <button
+              onClick={() => navigate("/ProfilePage")}
+              className="focus:outline-none transition-colors duration-200 group relative"
+              aria-label="Profile"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                strokeWidth={1.5} 
+                stroke="currentColor" 
+                className="w-7 h-7 group-hover:stroke-[1.7] transition-all"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" 
+                />
+              </svg>
+              {/* Hover effect circle */}
+              <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-10 group-hover:bg-gray-400 transition-opacity duration-200"></span>
+            </button>
+            
             <button
               onClick={() => navigate("/AuthPage")}
-              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium group relative overflow-hidden"
             >
-              Login/Register
+              <span className="relative z-10">Login/Register</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -skew-x-12 -translate-x-full group-hover:translate-x-full"></span>
             </button>
           </div>
           
@@ -446,6 +492,33 @@ function HoddyNaveBar({
               </button>
             )
           )}
+          
+          {/* Mobile Profile Link with creative icon */}
+          <button
+            onClick={() => {
+              navigate("/ProfilePage");
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-3 focus:outline-none font-medium transition-colors duration-200 flex items-center group"
+          >
+            <div className="relative mr-2">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                strokeWidth={1.5} 
+                stroke="currentColor" 
+                className="w-6 h-6 group-hover:stroke-[1.7] transition-all"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" 
+                />
+              </svg>
+            </div>
+            <UnderlineLink>Profile</UnderlineLink>
+          </button>
         </div>
       )}
     </nav>
