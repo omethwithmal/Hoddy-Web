@@ -70,7 +70,10 @@ function HoddyNaveBar({
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (cartDropdownRef.current && !cartDropdownRef.current.contains(event.target)) {
+      if (cartDropdownRef.current && 
+          !cartDropdownRef.current.contains(event.target) &&
+          // Add this check to ensure we're not clicking on cart-related elements
+          !event.target.closest('[data-cart-item]')) {
         setCartOpen(false);
       }
     }
@@ -82,7 +85,7 @@ function HoddyNaveBar({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [cartOpen]);
+  }, [cartOpen, setCartOpen]);
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -108,7 +111,7 @@ function HoddyNaveBar({
   };
 
   const CartPopup = ({ isMobile = false }) => (
-    <div className={`absolute ${isMobile ? 'right-0 top-full mt-2' : 'right-3 mt-'} w-96 bg-white border border-gray-100 rounded-xl shadow-xl z-50 animate-dropdown-fade overflow-hidden`}>
+    <div className={`absolute ${isMobile ? 'right-0 top-full mt-2' : 'right-3 mt-3'} w-96 bg-white border border-gray-100 rounded-xl shadow-xl z-50 animate-dropdown-fade overflow-hidden`}>
       <div className="p-0">
         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
@@ -141,7 +144,7 @@ function HoddyNaveBar({
           ) : (
             <div className="divide-y divide-gray-100">
               {cartItems.map((item) => (
-                <div key={`${item.id}-${item.color}-${item.size}`} className="flex p-4 hover:bg-gray-50 transition-colors">
+                <div key={`${item.id}-${item.color}-${item.size}`} className="flex p-4 hover:bg-gray-50 transition-colors" data-cart-item>
                   <img 
                     src={item.image} 
                     alt={item.name} 
@@ -156,8 +159,12 @@ function HoddyNaveBar({
                     <div className="mt-2 flex-1 flex items-end justify-between">
                       <div className="flex items-center border border-gray-200 rounded-md">
                         <button 
-                          onClick={() => updateQuantity(item.id, item.color, item.size, item.quantity - 1)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, item.color, item.size, item.quantity - 1);
+                          }}
                           className="px-2 py-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          data-cart-action
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -165,8 +172,12 @@ function HoddyNaveBar({
                         </button>
                         <span className="px-2 text-sm">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.id, item.color, item.size, item.quantity + 1)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, item.color, item.size, item.quantity + 1);
+                          }}
                           className="px-2 py-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          data-cart-action
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -174,8 +185,12 @@ function HoddyNaveBar({
                         </button>
                       </div>
                       <button 
-                        onClick={() => removeItem(item.id, item.color, item.size)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeItem(item.id, item.color, item.size);
+                        }}
                         className="text-red-500 hover:text-red-700 p-1"
+                        data-cart-action
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -196,7 +211,13 @@ function HoddyNaveBar({
               <p>Rs. {cartTotal.toLocaleString()}</p>
             </div>
             <div className="flex flex-col space-y-3">
-              <button className="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors font-medium">
+              <button 
+                onClick={() => {
+                  navigate("/checkout");
+                  setCartOpen(false);
+                }}
+                className="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors font-medium"
+              >
                 Proceed to Checkout
               </button>
               <button 
@@ -241,7 +262,7 @@ function HoddyNaveBar({
             </span>
           </div>
           
-          {/* Mobile view buttons - swapped positions */}
+          {/* Mobile view buttons */}
           <div className="flex items-center space-x-4 md:hidden ml-auto">
             <button
               onClick={() => navigate("/AuthPage")}
@@ -257,7 +278,6 @@ function HoddyNaveBar({
                 aria-label="Cart"
               >
                 <div className={`relative ${cartAnimation ? 'animate-bounce' : ''}`}>
-                  {/* Creative Cart Icon */}
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     fill="none" 
@@ -346,7 +366,6 @@ function HoddyNaveBar({
                 aria-label="Cart"
               >
                 <div className={`relative ${cartAnimation ? 'animate-bounce' : ''}`}>
-                  {/* Creative Cart Icon with hover effect */}
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     fill="none" 
@@ -371,7 +390,6 @@ function HoddyNaveBar({
               {cartOpen && <CartPopup />}
             </div>
             
-            {/* Creative Profile Icon */}
             <button
               onClick={() => navigate("/ProfilePage")}
               className="focus:outline-none transition-colors duration-200 group relative"
@@ -391,7 +409,6 @@ function HoddyNaveBar({
                   d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" 
                 />
               </svg>
-              {/* Hover effect circle */}
               <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-10 group-hover:bg-gray-400 transition-opacity duration-200"></span>
             </button>
             
@@ -493,7 +510,6 @@ function HoddyNaveBar({
             )
           )}
           
-          {/* Mobile Profile Link with creative icon */}
           <button
             onClick={() => {
               navigate("/ProfilePage");
