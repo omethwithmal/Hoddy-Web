@@ -687,7 +687,7 @@ function Women() {
       {/* Hero Banner */}
       <div className="w-full h-64 md:h-96 relative overflow-hidden mb-12">
         <img
-          src="/src/assets/images/Collection/Banner Image.jpg"
+          src="/src/assets/images/Collection/Banner Image1.jpg"
           alt="Women's Collection Banner"
           className="w-full h-full object-cover"
         />
