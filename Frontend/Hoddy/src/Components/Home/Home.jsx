@@ -16,7 +16,7 @@ const mobileImages = [
 const categoryCoverImages = {
   'Men': '/src/assets/images/Shop_Men/Men 7.jpg',
   'Women': '/src/assets/images/Shop_Women/women 5.jpg',
-  'Home Dec': '/src/assets/images/Home_Section/Home 1.jpg',
+  'Home Dec': '/src/assets/images/Shop_Bag/Home_Dec1.jpg',
   'Bags': '/src/assets/images/Shop_Bag/Bag 5.jpg'
 };
 
